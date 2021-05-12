@@ -1,3 +1,8 @@
+---
+title: "distributions"
+date: "4/23/2021"
+output: pdf_document
+---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
