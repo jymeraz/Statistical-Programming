@@ -1,18 +1,8 @@
-##############
-# By: Janeth Meraz
-# Course: STAT 4329
-# Instructor: Dr. Abhijit Mandal
-##############
-
-##############
-## QUESTION 1
-##############
-
 library(shiny)
 
 # Load the data.
 # Factor the categorical variables.
-data <- read.csv("/Users/boo/Documents/STAT4329/Hw10/diamond.csv")
+data <- read.csv("diamond.csv")
 data_2 <- data
 terms_cut <- c(data$cut[0])
 for(val in data$cut) {
