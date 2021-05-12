@@ -1,0 +1,152 @@
+---
+title: "Homework8"
+author: "Janeth Meraz"
+date: "3/12/2021"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(reticulate)
+matplotlib = import("matplotlib")
+matplotlib$use('Agg', force = TRUE) 
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE, tidy.opts=list(arrow=TRUE, indent=2), prompt=TRUE, continue = TRUE)
+```
+
+## Question 1
+
+Collisions between birds and airplanes are a major problem, threatening passenger safety and resulting in costly repairs. During the years 1990 - 1994, researchers gathered bird remains from runways at Lihue Airport on the island of Kauai, Hawaii. The data below are counts of birds found on the runway used for takeoffs from the 4 most frequently involved species:
+
+Species           Frequency
+Zebra dove        49
+Mannikin spp.     33
+Plover	          29
+Barn-owl	        6
+
+a. Construct a bar-plot to display the bird species data for the runway.
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+labels = np.array(['Zebra dove', 'Mannikin spp.', 'Plover', 'Barn-owl'])
+freq = np.array([49, 33, 29, 6])
+plt.clf()
+plt.bar(labels, freq)
+plt.show()
+```
+
+b. Construct a pie chart to display the bird species data for the runway. Add corresponding percentage values on the pie chart.
+
+```{python}
+plt.clf()
+plt.pie(freq, labels=labels, autopct='%1.1f%%')
+plt.show()
+```
+
+c. Create a data frame with two columns species and frequency.
+
+```{python}
+import pandas as pd
+df = pd.DataFrame(data={'Species': labels, 'Frequency': freq})
+print(df)
+```
+
+d. Without creating a new data frame, add a row containing a species as sparrow and frequency as 23.
+
+```{python}
+new = ['Sparrow', 23]
+df.loc[4] = new
+print(df)
+```
+
+e. Without creating a new data frame, add a column containing the percentages of five species.
+
+```{python}
+percent = [i / sum(freq) * 100 for i in df['frequency']]
+df['percentage'] = percent
+print(df)
+```
+
+f. Write a code to save the data frame in a csv file.
+
+```{python}
+df.to_csv("Species_Frequency.csv", index=False)
+```
+
+## Question 2
+
+Suppose we had a survey among the university students to check the grade distribution in the statistical programming class. We selected few students randomly who took this course and asked their grades. The response is stored in a data file named Grade.xlsx (check Miscellaneous module).
+
+a. Import this data set into Python. Note that the excel file does not have any column name.
+
+```{python}
+import pandas as pd
+data_set = pd.read_excel("Grade.xlsx", engine='openpyxl', header=None)
+```
+
+b. Find the frequency distribution to summarize the data and explain.
+
+There is only one vector of data, so we use the index 0. The sort parameter of value_counts is set to False in order to avoid having the order of the letters changed. 
+
+The summary table outputted shows the distribution of the grades based on frequency. Each letter grade has the frequency listed next to it, and as shown, the letter grade with the highest frequency is B, followed by C, followed by A, and lastly D.  
+
+```{python}
+freq = data_set[0].value_counts(sort=False)
+print(freq)
+```
+
+c. Make a bar chart to graphically represent the data.
+
+```{python}
+plt.clf()
+plt.bar(freq.index, freq.values)
+plt.show()
+```
+
+d. Suppose we want to convert the categorical data (grade) to a numerical variable for further statistical analysis. What is the average grade if A to D is labeled as 4 to 1?
+
+```{python}
+encoding = 4 - cols[0].astype('category').cat.codes
+average_grade = encoding.mean()[0]
+print(average_grade)
+```
+
+e. Create a new csv file that combines this numeric variable with the original data set.
+
+```{python}
+data_set['Scale'] = encoding
+data_set.rename(columns={0:'Grade'}, inplace=True)
+data_set.to_csv('NewFile.csv', index=False)
+```
+
+## Question 3
+
+The file Titanic.csv contains data from the voyage of the Titanic (check Miscellaneous module).
+
+a. Import this data set into Python.
+
+```{python}
+titanic_data = pd.read_csv('Titanic.csv')
+```
+
+b. Summarize the data set using frequency distributions.
+
+```{python}
+for i in range(titanic_data.shape[1]):
+    print(titanic_data.iloc[:,i].value_counts())
+```
+
+c. Make a cross table to see the survival history of different classes excluding crew members. [Hint: Use pandas.crosstab]
+
+```{python}
+cross_survival = pd.crosstab(titanic_data.CLASS,titanic_data.SURVIVE).drop("Crew")
+```
+
+d. Make a cross table to see the age and sex composition of different classes excluding crew members.
+
+```{python}
+cross_age = pd.crosstab(titanic_data.CLASS, titanic_data.AGE).drop("Crew")
+cross_sex = pd.crosstab(titanic_data.CLASS, titanic_data.SEX).drop("Crew")
+```
+
