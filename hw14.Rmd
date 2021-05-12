@@ -1,0 +1,97 @@
+---
+title: "hw14"
+author: "Janeth Meraz"
+date: "4/29/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+a. Make a histogram of the survival times. Is the distribution strongly skewed?
+
+The distribution shown in the histogram is strongly skewed. The histogram is skewed towards the right. If it was symmetrical, the mean would be equal to the median. When we verify this, we see that the mean is much greater than the median, which supports the previous notion that the distribution was strongly skewed to the right. 
+
+```{r}
+
+data <- c(43, 45, 53, 56, 56, 57, 58, 66, 67, 73, 74, 79, 80, 80, 81, 81, 81, 82, 83, 83, 
+          84, 88, 89, 91, 91, 92, 92, 97, 99, 99, 100, 100, 101, 102, 102, 102, 103, 104, 
+          107, 108, 109, 113, 114, 118, 121, 123, 126, 128, 137, 138, 139, 144, 145, 147, 
+          156, 162, 174, 178, 179, 184, 191, 198, 211, 214, 243, 249, 329, 380, 403, 511, 
+          522, 598)
+
+d <- density(data)
+hist(data, xlab = "Survival Time (Days)", main = "Survival Time of Guinea Pigs", 
+     prob = T, ylim = c(0,max(d$y)))
+lines(d)
+
+cat(sprintf("mean: %g\n", mean(data)))
+cat(sprintf("median: %g\n", median(data)))
+```
+b. The central limit theorem says that the sampling distribution of the sample mean x_bar becomes Normal as the sample size increases. Is the sampling distribution roughly Normal for n=72? To find out, bootstrap these data and inspect the bootstrap distribution of the mean (use a Normal quantile plot).
+
+The Normal quantile plot shows the data points very closely following the reference line. This indicated that the sampling distribution is roughly normal for n = 72. There are some points deviating from the line, but that is because it is not perfectly normal. 
+
+```{r}
+bootstrap_mean <- function(data, B = 1000) {
+  n <- length(data)
+  theta_hat_boot <- numeric(B)
+  for(i in 1:B) {
+    data.boot <- sample(data, n, replace = T)
+    theta_hat_boot[i] <- mean(data.boot)
+  }
+  qqnorm(theta_hat_boot, pch = 1)
+  qqline(theta_hat_boot, col = "red", lwd = 2)
+  
+  return (theta_hat_boot)
+}
+
+theta_hat_boot <- bootstrap_mean(data = data, B = 1000)
+
+```
+
+c. We have two ways to estimate the standard deviation of a sample mean x_bar: use the formula s/sqrt(n) for the standard error or use the bootstrap standard error. Find the sample standard deviation s for the 72 survival times and use it to find the standard error s/sqrt(n) of the sample mean. How closely does your result agree with the bootstrap standard error from your resampling?
+
+The difference between the standard error of the sample mean and the standard error of the bootstrap resampling is very close to zero, showing that the results closely agree. This indicates that the sample mean is an unbias estimator for the population mean.  
+
+```{r}
+
+n <- length(data)
+sample_SE <- sd(data) / sqrt(n)
+bootstrap_SE <- sd(theta_hat_boot)
+bootstrap_SE - sample_SE
+
+```
+
+d. Calculate a 95% bootstrap confidence interval for the mean survival time of the guinea pigs and compare it with the classical t-confidence interval.
+
+Hint: In the video lecture we discussed two types of bootstrap confidence intervals (CIs) - normal CI and pivotal CI. The example was given for the CI of the population median, but you can use those methods for the population mean or other parameters.
+
+The upper and lower limits for both confidence intervals are printed below. We can see that they are extremely close in values. This gives more confidence that the bootstrapping resampling method is effective. 
+
+```{r}
+
+bootstrap_CI <- function(data, theta_hat_boot, alpha = 0.05) {
+  z_alpha_by_2 <- qnorm(1-alpha/2)
+  theta_n_hat <- mean(data)
+  var_theta_n_hat <- var(theta_hat_boot)
+  CI <- c(theta_n_hat - z_alpha_by_2 * sqrt(var_theta_n_hat), theta_n_hat + z_alpha_by_2 * sqrt(var_theta_n_hat))
+  CI
+}
+
+t_CI = function(data, CI_level = 95) {
+    n <- length(data)
+    t.critical.value = qt(0.5 + CI_level/200, df = n - 1)
+    L = mean(data) - t.critical.value * sd(data)/sqrt(n)
+    U = mean(data) + t.critical.value * sd(data)/sqrt(n)
+    CI <- c(L,U)
+    CI
+}
+
+t_CI(data, CI_level = 95)
+
+bootstrap_CI(data, theta_hat_boot, alpha = 0.05)
+```
