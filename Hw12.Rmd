@@ -1,0 +1,153 @@
+---
+title: "Hw12"
+author: "Janeth Meraz"
+date: "4/13/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+Empirically show that the sample mean and standard deviation are independently distributed when samples are drawn from a normal population.
+
+Outline: Generate 10 random samples from N(5,4) distribution. Calculate the sample mean and standard deviation. Repeat the whole process 1000 times. Draw the scatter plot with 1000 means and standard deviations. From the scatter plot can you empirically justify that the sample mean and standard deviation are independently distributed?
+
+From the scatter plot below, we can empirically justify that the sample mean and standard deviation are independently distributed. We can say this because there seems to be no trend or relationship between the sample mean and standard deviation.  
+
+```{r}
+    library("matrixStats")
+
+    mu <- 5
+    sigma <- 4
+    n <- 10
+    replication <- 1000
+    data <- matrix(mu + sigma * rnorm(replication * n), n)
+    x_bar <- colMeans(data)
+    y_bar <- colSds(data)
+    plot(x_bar, y_bar, main="Mean vs Standard Deviation", 
+         xlab="Sample Means", ylab="Sample Standard Deviations")
+
+```
+
+## Question 2
+
+Suppose a box contains 15 computer chips, where 6 chips are defective. Create an artificial population for those chips, and take a random sample of size n=4 from the population. Let p be the sample proportion. By considering all possible samples, calculate the mean and the standard deviation of p. Consider both sampling with replacement and sampling without replacement and compare with their theoretical values. Also, check if the sampling distribution of p is approximately normal or not.
+
+Input: We can see that the sampling distribution is not quite normal. This is in line with Rule #3: When n is large and p is not too near 0 or 1, the sampling distribution of p is approximately normal. The value of n in our samples is n=4, so we can't expect for the sampling distribution of p to be normal. In addition, the rules of np>=10 and n(1-p)>=10 also are not true, which provides further evidence that we shouldn't expect to see a normal distribution.  
+
+```{r}
+  population <- c(1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  p <- 0.4
+  n <- 4
+  mu <- p
+  sigma <- sqrt((p * (1 - p))/n)
+  
+  all_sample <- combn(population, m = n)
+  
+  all_mean <- colMeans(all_sample)
+  mu_x_bar <- mean(all_mean)
+  sigma_x_bar <- sd(all_mean)
+
+  cat(paste("mean difference with no replacement:", mu_x_bar - mu))
+  cat(paste("\nstandard deviation difference with no replacement:", sigma_x_bar - sigma))
+  
+  hist(all_mean, prob = T, main = paste0("Without Replacement, n = ", n, ", mean: ",
+      round(mu_x_bar, 2), ", sd: ", round(sigma_x_bar, 2),
+      ", th. sd: ", round(sigma, 2)), breaks = 20,
+      xlab = expression(hat(p)))
+      curve(dnorm(x, mu, sigma), add = T)
+
+  # With replacement
+  all_sample = NULL
+  N = length(population)
+  for (i in 1:N)
+    for (j in 1:N)
+      for (k in 1:N)
+        for (l in 1:N)
+          all_sample = cbind(all_sample, population[c(i,j,k,l)])
+  
+  all_mean <- colMeans(all_sample)
+  
+  mean_replacement <- mean(all_mean)
+  sd_replacement <- sd(all_mean)
+  
+  cat(paste("\n\nmean difference with replacement:", mean_replacement - mu))
+  cat(paste("\nstandard deviation difference with replacement:", sd_replacement - sigma))
+  
+  hist(all_mean, prob = T, main = paste0("With Replacement, n = ", n, ", mean: ",
+      round(mean_replacement, 2), ", sd: ", round(sd_replacement, 2),
+      ", th. sd: ", round(sigma, 2)), breaks = 20,
+      xlab = expression(hat(p)))
+      curve(dnorm(x, mu, sigma), add = T)
+
+  
+```
+
+## Question 3
+
+Empirically show that the confidence interval has 100(1-alpha)% coverage probability (or success rate) in capturing the true value of sigma^2.
+
+Note: Take appropriate values of the parameters and sample size, then check the proportion of cases the confidence interval contains the true value of sigma^2.
+
+Through the plot and the theoretical/empirical proportions, we can empirically show that the confidence interval has 100(1-alpha)% covergae probability.
+
+```{r}
+CI_sigma_chi = function(n = 200, CI.level = 95, replicate = 100) {
+    k = replicate
+    
+    # actual value of sigma^2 using the central limit theorem
+    curr_sigma <- 2 * (n-1)
+    
+    # critical value
+    lower_critical = qchisq((100-CI.level)/200, n-1)
+    upper_critical = qchisq(1-(100-CI.level)/200, n-1)
+    
+    # store CIs for plot
+    CI = matrix(NA, k, 2)
+    # check if CI contains sigma^2 
+    is.contain.sigma = rep(0, k)
+    
+    for (i in 1:k) {
+        x = rchisq(n, n-1)
+        # CI of sigma is (L, U)
+        sigma_squared = (sd(x)^2)*((n-1)/n)
+        L <- (n * sigma_squared) / upper_critical
+        U <- (n * sigma_squared) / lower_critical
+        CI[i, ] = c(L, U)
+        if (curr_sigma > L && curr_sigma < U) {
+          is.contain.sigma[i] = 1
+        }
+    } 
+    # plot CIs
+    plot_CI(curr_sigma, CI, k)
+    # percentage of empirical coverage
+    empirical.level = 100 * mean(is.contain.sigma)
+    cat(sprintf("Theoretical Confidence level = %g percent, 
+Empirical Confidence level = %g percent. \n", 
+        CI.level, empirical.level))
+    cat(sprintf("\n"))
+}
+
+plot_CI = function(sigma, CI, replicate = 100) {
+    # plot confidence intervals
+    xlim = c(min(CI[, 1]), max(CI[, 2]))
+    K = replicate
+    # blank plot
+    plot(NA, xlim = xlim, ylim = c(1, K), ylab = "Replications", 
+        xlab = "Confidence Interval")
+
+    for (i in 1:K) {
+        if (sigma > CI[i, 1] & sigma < CI[i, 2]) {
+            lines(CI[i, ], c(i, i), col = "blue")
+        } else lines(CI[i, ], c(i, i), col = "red")
+    }
+    # sigma line
+    abline(v = sigma, col = "green", lwd = 3)
+}
+
+CI_sigma_chi()
+
+```
