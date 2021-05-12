@@ -1,6 +1,5 @@
 ---
-title: "Homework 6"
-author: "Janeth Meraz"
+title: "python_intro"
 date: "2/26/2021"
 output: pdf_document
 ---
@@ -140,7 +139,7 @@ np.diagonal(B)
 9. Perform the matrix multiplication AB.
 
 ```{python}
-# np.matmul(A,B)
+np.matmul(A,B)
 ```
 
 np.matmul(A,B) causes an error in R, but the following is the output on PyCharm: 
