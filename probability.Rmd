@@ -1,6 +1,5 @@
 ---
-title: "Homework11"
-author: "Janeth Meraz"
+title: "probability"
 date: "4/9/2021"
 output: pdf_document
 ---
