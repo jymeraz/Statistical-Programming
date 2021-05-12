@@ -1,6 +1,5 @@
 ---
-title: "Hw13"
-author: "Janeth Meraz"
+title: "hypothesis_testing"
 date: "4/23/2021"
 output: pdf_document
 ---
