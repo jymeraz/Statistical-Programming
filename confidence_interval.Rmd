@@ -1,6 +1,5 @@
 ---
-title: "hw14"
-author: "Janeth Meraz"
+title: "confidence_interval"
 date: "4/29/2021"
 output: pdf_document
 ---
