@@ -1,0 +1,270 @@
+---
+title: "Homework7"
+author: "Janeth Meraz"
+date: "3/1/2021"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part I
+
+1. [if] Suppose y=4. I will randomly generate some values of x. Your goal is to change y to 10 if x > 5. Write your code.
+
+```{python}
+y = 4
+x = 10
+if x > 5:
+  y = 10
+```
+
+2. [if 2 conditions] Suppose y=4. I will randomly generate some values of x. Your goal is to change y to 10 if x > 5 or x is less than or equal to 4. Write your code.
+
+```{python}
+y = 4
+if x > 5 or x <= 4:
+  y = 10
+```
+
+3. [if 2 statements] Suppose y=4 and tag=“default”. I will randomly generate some values of x. Your goal is to change y to 10 and tag to “changed” if x > 5. Write your code.
+
+```{python}
+y = 4
+tag = "default"
+if x > 5:
+  y = 10
+  tag = "changed"
+```
+
+4. [if else] Suppose y=4 and tag=“default”. I will randomly generate some values of x. Your goal is to change y to 10 and tag to “y increased” if x > 5, otherwise, change y to 2 and tag to “y decreased”. Write your code.
+
+```{python}
+y = 4
+tag = "default"
+if x > 5:
+  tag = 10
+  tag = "y increased"
+else:
+  y = 2
+  tag = "y decreased"
+```
+
+5. [nested if else] Suppose y=4 and tag=“default”. I will randomly generate some values of x. Your goal is to change y to 10 and tag to “y increased” if x > 5. But if is x less than equal to 4, change y to 2 and tag to “y decreased”. Otherwise, keep y unchanged but change the tag to “y unchanged”. Write your code.
+
+```{python}
+y = 4
+tag = "default"
+if x > 5:
+  y = 10
+  tag = "y increased"
+elif x <= 4:
+  y = 2
+  tag = "y decreased"
+else:
+  tag = "y unchanged"
+```
+
+6. [for] I will randomly generate a vector x with an arbitrary length. Calculate the sum of vector x and store it in a variable named total. Write a Python code using a for loop (without using sum or mean function).
+
+```{python}
+total = 0
+x = [1,3,4,5]
+for i in x:
+  total += i
+```
+
+7. [for and break] I will randomly generate a vector x with an arbitrary length. It contains a missing value. Calculate the sum of the elements of x that appear before the missing value. Store the sum in a variable named total_before_NA. Write a Python code using a for loop (without using sum or mean function).
+
+```{python}
+total_before_NA = 0
+x = [1,3,'NA',4,5]
+for i in x:
+  if i == 'NA':
+    break
+  total_before_NA += i
+```
+
+8. [for and next] I will randomly generate a vector x with an arbitrary length. It contains a missing value. Calculate the sum of the elements of x excluding the missing value. Store the sum in a variable named total_excluding_NA. Write a Python code using a for loop (without using sum or mean function).
+
+```{python}
+total_excluding_NA = 0
+for i in x:
+  if i == 'NA':
+    continue
+  total_excluding_NA += i
+```
+
+9. [while] I will randomly generate a vector x with an arbitrary length. It contains a missing value. Calculate the sum of the elements of x that appear before the missing value. Store the sum in a variable named total_before_NA. Write a Python code using a while loop (without using sum or mean function).
+
+```{python}
+total_before_NA = 0
+i = 0
+while i < len(x):
+  if x[i] == 'NA':
+    break
+  total_before_NA += x[i]
+  i += 1
+```
+
+## Part II
+
+1. Suppose x and y are two vectors. Write a function to check if x=y.
+
+```{python}
+def checkVector(x,y):
+  if x == y:
+    print('x is equal to y')
+  else:
+    print('x is not equal to y')
+```
+
+2. Suppose x and y are two vectors of length n. Write a function to check if xi=yi for at least one i=1,2,⋯,n.
+
+```{python}
+def checkValue(x,y):
+    if len(x) != len(y):
+        print('The two vectors are different lengths')
+        return
+    for i in range(len(x)):
+        if x[i] == y[i]:
+            print('xi=yi for at least one i')
+            return
+    print('The two vectors have no similar values')
+```
+
+3. Suppose x is a vector. Write a function f(x,type) where the output is
+
+  a. mean of x if type=“mean”
+  b. median of x if type=“median”
+  c. 10% trimmed mean of x if type=“trimmed”.
+
+```{python}
+import numpy as np
+from scipy import stats
+
+def checkStat(x,type):
+  if type == "mean":
+    return np.mean(x)
+  elif type == "median":
+    return np.median(x)
+  elif type == "trimmed":
+    return stats.trim_mean(x, 0.1)
+```
+
+4. [function: single output] Write a Python function with two input numbers x and y, and check whether x+y is even or odd. Check your output using few random values.
+
+```{python}
+def evenSum(x,y):
+  if ((x + y) % 2) == 0:
+    return str(x) + " + " + str(y) + " is even"
+  elif ((x + y) % 2) == 1:
+    return str(x) + " + " + str(y) + " is odd"
+  return str(x) + " + " + str(y) + " is not an integer"
+
+print(evenSum(6,4))
+print(evenSum(3.5,3))
+print(evenSum(-4,1))
+```
+
+5. [function: more than one outputs] Write a Python function where the input is the radius of the circle, and the outputs are the diameter, circumference, and area of that circle. Check your output using few random values.
+
+```{python}
+import math
+
+def circle(r):
+  diam = 2 * r
+  circ = 2 * math.pi * r
+  area = math.pi * (r ** 2)
+  return dict(diameter = diam, circumference = circ, area = area)
+
+print(circle(4))
+print(circle(2))
+print(circle(7))
+```
+
+6. [function: output vector with unknown length] Create a function with an input integer where it will calculate all possible divisors (other than 1 and itself). Check your output using few random values.
+
+```{python}
+def divisors(n):
+  div = []
+  for i in range(2, n//2 + 1):
+    if n % i == 0:
+      div += [i]
+  return div
+
+print(divisors(10))
+print(divisors(5))
+print(divisors(20))
+```
+
+7. [if else] Write a Python function to print all prime numbers less than x. Verify your outputs using x=49 and 51.
+
+```{python}
+def primes(x):
+  for i in range(1, x):
+    if i == 2:
+      print(str(i) + " is a prime number")
+    elif i > 2:
+      if not any([i % k == 0 for k in range(2,int(math.sqrt(i))+1)]):
+          print(str(i) + " is a prime number")
+
+primes(49)
+primes(51)
+```
+
+8. [if else, loop] Without using any built-in function like math.factorial() write your own function, say myFun(x), to calculate the factorial of x, where x is a non-negative integer, i.e. x=0,1,2,⋯. Print a message if x is negative or fraction. Show your outputs for x = -5, 0, 5 and 15.5.
+
+```{python}
+def myFun(x):
+  if x < 0 or x != round(x):
+    return "Error. x should be a positive integer."
+  fact = 1
+  for i in range(x,0,-1):
+    fact = fact * i
+  return fact
+
+print(myFun(-5))
+print(myFun(0))
+print(myFun(5))
+print(myFun(15.5))
+```
+
+9. [for, while, repeat, break] Suppose you are given a vector with arbitrary length. Sequentially, print values using the following rules:
+
+  i. Print a value if it is less than 0.3 or more than 0.8, but skip it (do not print the value) if it is in (0.1, 0.2],
+
+  ii. Skip the entire process (do not print any value even if it follows the first rule) if you find a value in [0.4,0.5].
+
+Write three separate R functions using (a) for loop, (b) while loop and (c) repeat loop. Draw a random sample of size n=20 from a uniform distribution in 0 and 1 using numpy.random.uniform(low=0.0, high=1.0, size=20) and verify your outputs.
+
+```{python}
+def forLoop(x):
+  for i in x:
+    if i >= 0.4 and i <= 0.5:
+      break
+    if i > 0.1 and i <= 0.2:
+      continue
+    if i < 0.3 or i > 0.8:
+      print(i)
+
+def whileLoop(x):
+  i = 0
+  while i < len(x):
+    if x[i] >= 0.4 and x[i] <= 0.5:
+      i += 1
+      break
+    if x[i] > 0.1 and x[i] <= 0.2:
+      i += 1
+      continue
+    if x[i] < 0.3 or x[i] > 0.8:
+      print(x[i])
+    i += 1
+
+sample = np.random.uniform(low=0.0, high=1.0, size=20)
+forLoop(sample)
+whileLoop(sample)
+```
