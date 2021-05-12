@@ -1,6 +1,5 @@
 ---
-title: "R Markdown Homework Template"
-author: "Janeth Meraz"
+title: "indexing"
 date: "1/28/2021"
 output: pdf_document
 ---
