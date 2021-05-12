@@ -1,0 +1,143 @@
+---
+title: "Hw13"
+author: "Janeth Meraz"
+date: "4/23/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+Consider the large sample Z-test for the population proportion. Let p be the population proportion. The goal is to test the following hypothesis
+
+H0:p=p0 vs. Ha:p/=p0.
+
+```{r}
+# function for the empirical level
+emp_level = function(n = 40, R = 1000, p = 0.41, sigma = 1, alpha = 0.05) {
+  
+    p0 = p
+    # store the test statistics
+    stat = rep(NA, R)
+    for (r in 1:R) {
+        X = rbinom(n, 1, p0)
+        stat[r] = (mean(X) - p0) / (sqrt(p0*(1-p0)/n))
+    }
+
+    # z critical value
+    z_alpha = qnorm(1-(alpha/2))  
+    cat(sprintf("Nominal level: %g\n", alpha))
+
+
+    # Ha: p != p0
+    emp_level = mean(abs(stat) > z_alpha)
+    cat(sprintf("Ha: p /= p0, Empirical level: %g\n", emp_level))
+    
+    # Plot the histogram
+    d = density(stat)  # kernel density
+    hist(stat, xlab = "Test Statistic", prob = T, ylim = c(0, 
+        max(d$y) + 0.05), main = "")
+
+    # Add the null distribution and the kernel density on the
+    # histogram.
+    lines(d$x, d$y, col = "red")  
+    curve(dt(x, df = n - 1), col = "blue", add = TRUE) 
+    legend("topleft", legend = c("Kernel Density", "Null Distribution"), 
+        lty = 1, col = c("red", "blue"), cex = 0.6)
+}
+
+# call empirical level
+emp_level(n=40, R=1000, alpha=0.05)
+
+# function for the power 
+power_test = function(n = 40, R = 1000, p0 = 0.41, p = p0 + 
+    0.40, sigma = 1, alpha = 0.05) {
+
+    # store the test statistics
+    stat = rep(NA, R) 
+    for (i in 1:R) {
+        X = rbinom(n, 1, p0)
+        stat[i] = (mean(X) - p0) / (sqrt(p0*(1-p0)/n))
+    }
+
+    # Z_alpha: two sided critical  value
+    Z_alpha = qnorm(1-(alpha/2))
+    
+    theoretical_power = 1 - pnorm(Z_alpha - (abs((p - p0) / (sqrt(p0*(1-p0)/n)))))
+    cat(sprintf("Nominal level: %g, p = %g, theoretical power: %g\n", 
+        alpha, p0, theoretical_power))
+
+    # empirical power
+    empirical_power = mean(abs(stat) < Z_alpha)
+    cat(sprintf("Ha: p /= p0, Empirical power: %g\n", empirical_power))
+    
+    # plot the histogram
+    d = density(stat) 
+    hist(stat, xlab = "Test Statistic", prob = T, ylim = c(0, 
+        max(d$y) + 0.05), main = "")
+
+    # Add the null distribution and the kernel density on the
+    # histogram.
+    lines(d$x, d$y, col = "red")
+    curve(dt(x, df = n - 1), col = "blue", add = TRUE) 
+    legend("topleft", legend = c("Kernel Density", "Null Distribution"), 
+        lty = 1, col = c("red", "blue"), cex = 0.6)
+}
+
+# show how the power of the test depends on alpha, p-p0 and n
+
+power_test(n=20)
+power_test(n=40)
+power_test(n=50)
+
+power_test(p = 0.5, p0 = 0.4)
+power_test(p = 0.2, p0 = 0.9)
+power_test(p = 0.44, p0 = 0.43)
+
+power_test(alpha=0.05)
+power_test(alpha=0.01)
+power_test(alpha=0.20)
+
+```
+
+## Question 2
+
+Consider the two-sample pooled t-test. Suppose X1,X2,...,Xn N(mu * x,sigma^2) and Y1,Y2,...,Ym N(mu * y,sigma^2) are independent random samples. We want to test the following hypothesis
+
+H0:mux = muy vs. Ha:mux > muy.
+
+Write a code for the empirical power function of this test.
+
+Below, we have the code to show the empirical power of this test. 
+
+```{r}
+Power_Z_test = function(n = 40, m = 40, mux = 10, muy = 10, sd = 1, xbar = 50, ybar = 10, R = 1000, alpha = 0.05) {
+
+    # Store the test statistics
+    stat = rep(NA, R) 
+    
+    # Compute the test statistics from t distributions.
+    for (i in 1:R) {
+        X = rnorm(n, mux, sd)
+        Y = rnorm(m, muy, sd)
+        numerator = (mean(X)-mean(Y)) - (mux - muy)
+        pooled = ((n-1)*var(X) + (m-1)*var(Y)) / (n+m-2)
+        denominator = sqrt(pooled) * sqrt(1/n + 1/m)
+        stat[i] = numerator/denominator
+    }
+
+    # T critical value
+    t_alpha = qt(1 - alpha, n+m-2)
+
+    # Empirical power
+    empirical_power = mean(stat > -t_alpha)
+    cat(sprintf("Ha: mux > muy, Empirical power: %g\n", empirical_power))
+}
+
+Power_Z_test()
+
+```
+
