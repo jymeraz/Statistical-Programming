@@ -1,0 +1,183 @@
+---
+title: "Homework11"
+author: "Janeth Meraz"
+date: "4/9/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+Calculate the probability for each of the following events:
+
+a. A standard normally distributed variable is larger than 3.
+
+```{r}
+    prob <- pnorm(3, lower.tail = FALSE)
+    prob
+```
+
+b. A normally distributed variable with a mean of 35 and a standard deviation of 6 is smaller than 42.
+
+```{r}
+    prob <- pnorm(42, mean = 35, sd = 6)
+    prob
+```
+
+c. Getting 8 out of 10 successes in a binomial distribution with a success probability of 0.8.
+
+```{r}
+    prob <- dbinom(8, size = 10, prob = 0.8) 
+    prob
+```
+
+d. X = 0.9 when X has the continuous uniform distribution from -1 to 1. Hint: use theory; R code is not needed.
+
+```{r}
+    prob <- dunif(0.9, min = -1, max = 1)
+    prob
+    
+    # Without using R.
+    prob <- 1/(1--1)
+    prob
+```
+
+e. X > 6.5 in a chi-square distribution with 2 degrees of freedom.
+
+```{r}
+    prob <- pchisq(6.5, df = 2, lower.tail = FALSE)
+    prob
+```
+
+## Question 2
+
+A rule of thumb is that 5% of the normal distribution lies outside an interval approximately ±2sd about the mean, where sd is the standard deviation. What are the limits corresponding to 10% and 1% (use some R functions)? Verify those results by generating a large data set from the normal distribution.
+
+```{r}
+    # Compute the x value for 10%.
+    ten_percent <- c(qnorm(.10), qnorm(.90))
+    ten_percent
+    
+    # Compute the x value for 1%.
+    one_percent <- c(qnorm(.01), qnorm(.99))
+    one_percent
+    
+    # Generate  a large data set from the normal distribution.
+    x <- rnorm(10000)
+    
+    # Check the outputs.
+    # The probability of both should be close to 0.10. 
+    mean(x<= -1.281552)
+    mean(x>= 1.281552)
+    
+    # The probability of both should be close to 0.01.
+    mean(x<= -2.326348)
+    mean(x>= 2.326348)
+    
+    # Plot the data set to help with visualization.
+    hist(x, prob = T)
+    curve(dnorm(x), -3, 3, add = T)
+```
+
+## Question 3
+
+Finding the area of a circle using the Monte Carlo method (take an arbitrary radius). Then, find an approximate value of pi.
+
+```{r}
+  area_circle <- function(n, r) {
+  # Generate n uniformly random points in the square [a, b] × [a, b].
+  X <- runif(n, -r, r)
+  Y <- runif(n, -r, r)
+
+  # Total area of the rectangle
+  A <- (-r-r)^2
+  
+  # Proportion of points that fall inside the circle
+  p <- mean((X^2+Y^2) < r^2)
+  
+  # Required area
+  return(A * p)
+  }
+
+r <- 4
+# Estimate area of a circle
+area_circle(10000,r)
+
+r <- 1
+# Set radius = 1 to estimate the approximate value of pi
+area_circle(10000, r)
+
+```
+
+## Question 4
+
+If X-X^2d1 and Y-X^2d2, then X/d1/Y/d2 -F(d1, d2)
+
+a. Using this rule, generate random samples from two chi-square distributions and construct a set of a random sample from the F-distribution. Take appropriate degrees of freedom.
+
+```{r}
+   # Generate random samples from two chi-square distributions.
+   n <- 10000
+   X <- rchisq(n, 2)
+   Y <- rchisq(n, 3)
+   
+   # Divide the distributions to construct an F distribution.
+   F_dist <- X / Y
+```
+
+b. Use the Kolmogorov-Smirnov test (KS test) to check if the generated data is from the F(d1,d2) distribution.
+
+We can see the Kolmogorov-Smirnov test below, the p-value is high, which means that we cannot reject the null hypothesis that the two distributions are the same. 
+
+```{r}
+    # Apply the Kolmogorov-Smirnov test. 
+    ks.test(F_dist, pf(n, 2, 3))
+```
+
+c. Draw the normal Q-Q plot and discuss the shape of the distribution.
+
+Since we are using the normal Q-Q plot, we can see that some of the points deviate from the Q-Q line. The qq line is horizontal, which makes sense given the skewness of the f distribution.
+
+We can also plot it on a Q-Q plot to check if it is an F distribution. In this plot, the values line up with the qq line much better, which helps support the previous notion that it is an f distribution. There are still values deviating from this line towards the end, which shows that the distribution is very skewed.   
+
+
+```{r}
+    # Draw the Q-Q plot and include the line. 
+    qqnorm(F_dist)
+    qqline(F_dist)
+    
+    # For clarity, use qq plot to check if the distribution is an F distribution.
+    qqplot(qf(x, 2, 3), F_dist)
+    qqline(F_dist, distribution = function(p) qf(p, 2, 3))
+```
+
+d. Using an R function, directly draw random samples from the F(d1,d2) distribution. Using the kernel density estimates and box plots the compare your result with the previous method.
+
+The plot below shows the theoretical distribution and the kernel density estimates for the constructed distribution and the distribution drawn from random samples. Surprisingly, the constructed distribution aligns closer to the theoretical distribution. This could be due to the randomness that goes into generating both distributions. The box plots of both the distributions appear to have the same quartiles and are both skewed on the same side.  
+
+```{r}
+   # Directly draw samples from the F(d1,d2) distribution. 
+   F_sample <- rf(n, 2, 3)
+
+   # Plot a histogram of the constructed distribution.
+   hist(F_dist, prob = T, main = "")
+   
+   # Include the curve of the F(d1,d2) distribution.  
+   curve(df(x, 2, 3), add=T)
+   
+   # Use the samples from the F distribution to plot the kernel density. 
+   c <- density(F_dist)
+   lines(c$x, c$y, col = "red")
+   
+   c <- density(F_sample)
+   lines(c$x, c$y, col = "blue")
+   
+   legend("topright", legend = c("F distribution", "Kernel density for constructed distribution", "Kernel density for sampled distribution"), 
+          lty = 1, col = c("black", "red", "blue"), cex = 0.8)
+   
+   # Plot the box plots of the constructed distribution and the sampled distribution.
+   boxplot(F_sample, F_dist)$stat
+```
