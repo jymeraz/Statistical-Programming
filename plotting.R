@@ -1,25 +1,8 @@
-##############
-# By: Janeth Meraz
-# Course: STAT 4329
-# Instructor: Dr. Abhijit Mandal
-##############
-
-##############
-## QUESTION 1
-##############
-
-# Separate file is included.
-
-##############
-## QUESTION 2
-##############
-
 library(ggplot2)
 library(ggpubr)
 
 # Read the data from the file.
-# data <- read.csv("diamond.csv","rt")
-data <- read.csv("/Users/boo/Documents/STAT4329/Hw10/diamond.csv")
+data <- read.csv("diamond.csv")
 
 # Format the categorical variables.
 terms_cut <- c(data$cut[0])
@@ -56,10 +39,6 @@ ggplot(data=data, mapping=aes(x=price, y=carat)) +
 # This shows that diamond price does depend on clarity.
 # The price of the diamond also depends on color, where color F and E are primarily the cheaper ones and color J tends to be at the pricier range.
 # Since we are seeing three categorical variables in one plot, it's difficult to quickly see relationships, but these capture the overall behavior. 
-
-##############
-## QUESTION 3
-##############
 
 library(magrittr)
 
