@@ -1,0 +1,152 @@
+---
+title: "Homework 6"
+author: "Janeth Meraz"
+date: "2/26/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part I: Vectors
+
+Suppose x is a vector with elements 3, 5, 2, 0, 6, -10, and 4. Write your Python code/syntax to answer the following questions.
+
+1. Create the vector x in Python. (You may use either a list, tuple, or numPy array)
+
+```{python}
+import numpy as np
+x = np.array([3, 5, 2, 0, 6, -10, 4])
+```
+
+2. How will you extract the 5-th element of x?
+
+```{python}
+x[4]
+```
+
+3. Create a vector y by taking the 2nd, 3rd, and 4th elements of x. Do not use the actual values of x, use indexing rules. (Hint: Use range function. Note that if x is a numPy array, it is easy to get any arbitrary set of indices)
+
+```{python}
+y = np.array(x[[1,2,3]])
+```
+
+4. Create a vector z by removing the 3rd and 4th elements of x. Do not use the actual values of x, use indexing rules.
+
+```{python}
+z = np.delete(x, [2,3])
+```
+
+5. What is the maximum value of x? You must use a Python function (also for the next 3 questions).
+
+```{python}
+max(x)
+```
+
+6. What is the minimum value of x?
+
+```{python}
+min(x)
+```
+
+7. What is the mean of x?
+
+```{python}
+np.mean(x)
+```
+
+8. What is the standard deviation of x?
+
+```{python}
+np.std(x)
+```
+
+9. What is the output of x[50]?
+
+```{python, error = TRUE}
+x[50]
+```
+
+output: IndexError: list index out of range
+
+10. The vector x[-2] is the same as x[5]. True or false?
+
+```{python}
+x[-2] == x[5]
+```
+
+True
+
+11. The vector x[:] is the same as x. True or false?
+
+```{python}
+x[:] == x
+```
+
+True
+
+## Part II: Matrices
+
+1. Create a matrix A in Python by arranging elements from 1 to 12 in 3 rows and 4 columns. The arrangement must be by row, that is the first row will be (1, 2, 3, 4), the second row will be (5, 6, 7, 8) and the third row is (9, 10, 11, 12).
+
+```{python}
+A = np.reshape(range(1,13),(3,4))
+```
+
+2. Using the indexing rule, extract the (2,4)-th element of A. Do not write the output as 8, it must be a Python syntax.
+
+```{python}
+A[1,3]
+```
+
+
+3. Print the 3-rd row of A. It must be a Python syntax.
+
+```{python}
+A[2]
+```
+
+4. Print the 4-th column of A. It must be a Python syntax.
+
+```{python}
+A[:,3]
+```
+
+5. Change the (1,4)-th element of A to 50 without writing other elements.
+
+```{python}
+A[0,3] = 50
+```
+
+6. Suppose we have a vector with elements (10, 3, 5, 2). Add this vector as the 1st row of A without writing elements of A. Call this matrix B that is a 4 times 4 matrix.
+
+```{python}
+B = np.vstack([[10, 3, 5, 2], A])
+```
+
+7. Find the determinant of B.
+
+```{python}
+np.linalg.det(B)
+```
+
+8. Using a Python command, find the diagonal elements of B.
+
+```{python}
+np.diagonal(B)
+```
+
+9. Perform the matrix multiplication AB.
+
+```{python}
+# np.matmul(A,B)
+```
+
+np.matmul(A,B) causes an error in R, but the following is the output on PyCharm: 
+
+[[ 63  65  76  82]
+ [163 149 180 186]
+ [263 233 284 290]]
+
+
